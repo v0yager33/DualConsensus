@@ -1,0 +1,73 @@
+hydra:
+  searchpath:
+    - file://verl/trainer/config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+dcrl:
+  # Whether to enable DCRL
+  enable: false
+
+  # Number of rollouts per prompt in anchor stage, used for voting
+  n_votes_anchor: ${actor_rollout_ref.rollout.n}/2
+
+  # Number of rollouts per prompt in explorer stage, used for voting
+  n_votes_explorer: ${actor_rollout_ref.rollout.n}/2
+
+  # Number of total rollouts per prompt used for voting, must be equal to the sum of n_votes_anchor and n_votes_explorer
+  n_votes_per_prompt: ${actor_rollout_ref.rollout.n}
+
+  # Number of actual training rollouts per prompt in anchor stage
+  n_samples_anchor: ${actor_rollout_ref.rollout.n}/2
+
+  # Number of actual training rollouts per prompt in explorer stage
+  n_samples_explorer: 0
+
+  # Number of total training rollouts per prompt, must be equal to the sum of n_sample_anchor and n_sample_explorer
+  n_samples_per_prompt: ${actor_rollout_ref.rollout.n}/2
+
+  # Learning ratio of the unlearn process
+  unlearn_lr: 3e-7
+
+  # Entropy shreshold of the gate of DCRL
+  gate: 0.1 
+
+  # Whether enable harmonic mean voting
+  harmonic_vote: true
+
+  # Range of computing mean entropy of recent steps
+  m_step: 3
+
+  # Range of computing consensus ratio
+  queue_len: 5
+
+  # Set to true if use explorer sample all the time
+  forced_dynamic_sample: false
+
+  # Gate of consensus ratio to enable dynamic sampling
+  dynamic_sample_gate: 0.5
+
+  # Enable conservative reward
+  anchor_majority_reward: true
+
+# config for actor
+actor_rollout_ref:
+  # configs for dcrl unlearn
+  actor:
+    dcrl:
+      # Unlearn lr
+      unlearn_lr: 0.0
+      
+      # Clip left range of probability
+      epsilon_low: 0.01
+      
+      # Clip right range of probability
+      epsilon_high: 0.01
+
+  dcrl:
+    unlearn_lr: 0.0
+
+
+
